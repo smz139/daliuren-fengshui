@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#090909"/>
+  <circle cx="256" cy="256" r="194" fill="none" stroke="#b89f80" stroke-width="8"/>
+  <circle cx="256" cy="256" r="145" fill="none" stroke="#555" stroke-width="4"/>
+  <path d="M256 62v388M62 256h388M119 119l274 274m0-274L119 393" stroke="#444" stroke-width="3"/>
+  <text x="256" y="238" text-anchor="middle" fill="#d4af37" font-size="96" font-family="serif">六壬</text>
+  <text x="256" y="330" text-anchor="middle" fill="#eee" font-size="56" font-family="serif">风水</text>
+</svg>

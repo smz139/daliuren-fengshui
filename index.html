@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大六壬风水</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: "KaiTi","STKaiti","Kaiti SC","Songti SC",serif;
+    margin: 0;
+    padding: 16px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 34px;
+    letter-spacing: 10px;
+    margin: 10px 0 22px;
+    font-weight: normal;
+    text-shadow: 0 0 14px rgba(255,255,255,.35);
+  }
+  .panel {
+    max-width: 880px;
+    margin: 0 auto 22px;
+    border: 1px solid #2c2c2c;
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: #080808;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .row > label {
+    width: 70px;
+    color: #bbb;
+    font-size: 15px;
+    flex: none;
+  }
+  select, input[type="number"] {
+    background: #111;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+  }
+  select:focus, input:focus { border-color: #999; }
+  .actions { text-align: center; margin-top: 18px; border-top: 1px solid #222; padding-top: 18px; }
+  button {
+    background: #161616;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 10px 40px;
+    font-family: inherit;
+    font-size: 16px;
+    letter-spacing: 6px;
+    cursor: pointer;
+    transition: .15s;
+  }
+  button:hover { background: #262626; border-color: #aaa; }
+  button:active { transform: scale(.98); }
+
+  .sizhu-display {
+    text-align: center;
+    margin: 10px 0 16px;
+    font-family: "KaiTi","STKaiti",serif;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+  .zhu { display: flex; flex-direction: column; align-items: center; }
+  .zhu-gz { font-size: 26px; color: #fff; line-height: 1.2; }
+  .zhu-label { font-size: 12px; color: #888; margin-top: 2px; letter-spacing: 1px; }
+
+  .info {
+    text-align: center;
+    color: #cfcfcf;
+    font-size: 14px;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    margin: 4px 0 14px;
+    min-height: 22px;
+  }
+  .info .hl { color: #7fb3d5; }
+
+  .pan-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 26px;
+    overflow-x: auto;
+  }
+  .pan-svg { width: 100%; max-width: 800px; height: auto; }
+
+  .text-pan {
+    max-width: 880px;
+    margin: 0 auto;
+    font-family: "KaiTi","STKaiti",serif;
+    line-height: 1.5;
+    padding-left: 10px;
+  }
+  .text-line { display: flex; align-items: flex-end; margin-bottom: 6px; }
+  .big-text { font-size: 28px; letter-spacing: 6px; color: #fff; }
+  .small-text { font-size: 13px; color: #888; margin-left: 12px; margin-bottom: 6px; letter-spacing: 1px; }
+  .keti-box { margin-top: 20px; font-size: 18px; color: #fff; letter-spacing: 2px; padding-bottom: 40px; }
+  .keti-box .label { color: #9aa0a6; }
+  .keti-box .val { color: #f1c40f; font-weight: bold; }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 26px; letter-spacing: 6px; }
+    .row > label { width: 60px; font-size: 14px; }
+    .big-text { font-size: 22px; letter-spacing: 4px; }
+    .small-text { font-size: 12px; margin-left: 8px; }
+    .sizhu-display { gap: 15px; }
+    .zhu-gz { font-size: 22px; }
+  }
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#090909">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="大六壬风水">
+<link rel="apple-touch-icon" href="icon.svg">
+</head>
+<body>
+
+<h1>大六壬风水</h1>
+
+<div class="panel">
+  <div class="row">
+    <label>年柱</label><select id="yGan" class="gan"></select><select id="yZhi" class="zhi"></select>
+  </div>
+  <div class="row">
+    <label>月柱</label><select id="mGan" class="gan"></select><select id="mZhi" class="zhi"></select>
+  </div>
+  <div class="row">
+    <label>日柱</label><select id="dGan" class="gan"></select><select id="dZhi" class="zhi"></select>
+  </div>
+  <div class="row">
+    <label>时柱</label><select id="hGan" class="gan"></select><select id="hZhi" class="zhi"></select>
+  </div>
+  <div class="row">
+    <label style="color:#888; font-size:12px;">时辰快捷</label>
+    <select id="quickHour" style="width:120px;">
+      <option value="">-- 选时辰 --</option>
+      <option value="0">子时</option><option value="1">丑时</option><option value="2">寅时</option>
+      <option value="3">卯时</option><option value="4">辰时</option><option value="5">巳时</option>
+      <option value="6">午时</option><option value="7">未时</option><option value="8">申时</option>
+      <option value="9">酉时</option><option value="10">戌时</option><option value="11">亥时</option>
+    </select>
+  </div>
+
+  <div class="row" style="margin-top: 15px; border-top: 1px dashed #333; padding-top: 15px;">
+    <label>性别</label>
+    <select id="gender">
+      <option value="male">男</option>
+      <option value="female">女</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label>坐山</label>
+    <select id="zuoShan" class="shan" style="width: 80px;"></select>
+    <input type="number" id="zuoDeg" value="0" step="1" style="width: 60px;" title="偏转度数 (顺时针)">
+    <span style="font-size:12px; color:#888;">度偏转</span>
+  </div>
+
+  <div class="row">
+    <label>朝向</label>
+    <select id="xiangShan" class="shan" style="width: 80px;"></select>
+    <input type="number" id="xiangDeg" value="0" step="1" style="width: 60px;" title="偏转度数 (顺时针)">
+    <span style="font-size:12px; color:#888;">度偏转</span>
+  </div>
+
+  <div class="row">
+    <label>水口</label>
+    <select id="shuiKou" class="zhi" style="width: 100px;"></select>
+  </div>
+
+  <div class="actions">
+    <button id="btnPan">排 盘</button>
+  </div>
+</div>
+
+<div class="sizhu-display" id="sizhuDisplay"></div>
+<div class="info" id="info"></div>
+
+<div class="pan-wrap">
+  <svg class="pan-svg" viewBox="0 0 900 900">
+    <g id="panContent"></g>
+  </svg>
+</div>
+
+<div class="text-pan" id="textPan"></div>
+
+<script>
+/* ============ 基础数据 ============ */
+const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_WX = ['木','木','火','火','土','土','金','金','水','水'];
+const ZHI_WX = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+const KE_MAP = { '木':'土', '土':'水', '水':'火', '火':'金', '金':'木' };
+
+const JIGONG = [2,4,5,7,5,7,8,10,11,1];
+const YUEJIANG = [1,0,11,10,9,8,7,6,5,4,3,2];
+const SHAN24 = ['子','癸','丑','艮','寅','甲','卯','乙','辰','巽','巳','丙','午','丁','未','坤','申','庚','酉','辛','戌','乾','亥','壬'];
+const SHUN_PAIRS = { 0:'子癸', 1:'丑艮', 2:'寅甲', 3:'卯乙', 4:'辰巽', 5:'巳丙', 6:'午丁', 7:'未坤', 8:'申庚', 9:'酉辛', 10:'戌乾', 11:'亥壬' };
+const NI_PAIRS = { 0:'子壬', 1:'丑癸', 2:'寅艮', 3:'卯甲', 4:'辰乙', 5:'巳巽', 6:'午丙', 7:'未丁', 8:'申坤', 9:'酉庚', 10:'戌辛', 11:'亥乾' };
+
+const TIANJIANG = ['贵人','螣蛇','朱雀','六合','勾陈','青龙','天空','白虎','太常','玄武','太阴','天后'];
+const TJ_SHORT = ['贵','蛇','雀','合','勾','龙','空','虎','常','玄','阴','后'];
+const GUIREN = [ [1,7],[0,8],[11,9],[11,9],[1,7],[0,8],[1,7],[6,2],[5,3],[5,3] ];
+
+// 后天八卦（洛书方位：坎北0度，艮东北45度...）
+const BAGUA = ['坎','艮','震','巽','离','坤','兑','乾'];
+const BAGUA_START_DEG = [0, 45, 90, 135, 180, 225, 270, 315]; // 每卦起止度数
+
+const XIU_DATA = [
+  { name: "角", du: 12.00 }, { name: "亢", du: 9.00 },  { name: "氐", du: 16.50 },
+  { name: "房", du: 5.50 },  { name: "心", du: 6.00 },  { name: "尾", du: 18.00 },
+  { name: "箕", du: 11.25 }, { name: "斗", du: 24.00 }, { name: "牛", du: 7.00 },
+  { name: "女", du: 11.00 }, { name: "虚", du: 9.25 },  { name: "危", du: 16.00 },
+  { name: "室", du: 16.00 }, { name: "壁", du: 9.25 },  { name: "奎", du: 16.50 },
+  { name: "娄", du: 12.00 }, { name: "胃", du: 14.00 }, { name: "昴", du: 11.00 },
+  { name: "毕", du: 16.00 }, { name: "觜", du: 0.50 },  { name: "参", du: 10.50 },
+  { name: "井", du: 30.00 }, { name: "鬼", du: 4.00 },  { name: "柳", du: 15.00 },
+  { name: "星", du: 7.00 },  { name: "张", du: 18.00 }, { name: "翼", du: 18.00 },
+  { name: "轸", du: 17.25 },
+];
+let xiuStartAngles = [];
+let currentAngle = 0;
+const totalDu = XIU_DATA.reduce((acc, cur) => acc + cur.du, 0);
+XIU_DATA.forEach(x => {
+  xiuStartAngles.push(currentAngle);
+  currentAngle += (x.du / totalDu) * 360;
+});
+
+/* ============ 工具 ============ */
+function pt(cx, cy, r, deg) {
+  const rad = (deg - 90) * Math.PI / 180; // 0度在正上方
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+}
+function fillSelect(el, arr) {
+  el.innerHTML = '';
+  arr.forEach((v, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = v;
+    el.appendChild(o);
+  });
+}
+
+/* ============ 天将 ============ */
+function getTianjiang(dayGan, hourZhi, tianpan) {
+  const [dayGui, nightGui] = GUIREN[dayGan];
+  const isDay = (hourZhi >= 3 && hourZhi <= 8);
+  const guiZhi = isDay ? dayGui : nightGui;
+  const diPos = tianpan.indexOf(guiZhi);
+  const shun = (diPos >= 11 || diPos <= 4);
+  const map = {};
+  for (let i = 0; i < 12; i++) {
+    const tz = shun ? (guiZhi + i) % 12 : ((guiZhi - i) % 12 + 12) % 12;
+    map[tz] = { name: TIANJIANG[i], short: TJ_SHORT[i], idx: i };
+  }
+  return { map, guiZhi, diPos, shun };
+}
+
+/* ============ 课体扩展 ============ */
+function getExtraKeti(chuan, dG, dZ, tianpan, tj) {
+  const list = [];
+  const [c1, c2, c3] = chuan;
+  const set = new Set([c1, c2, c3]);
+
+  if (set.size === 3) {
+    if (set.has(8) && set.has(0) && set.has(4)) list.push('润下课');
+    else if (set.has(2) && set.has(6) && set.has(10)) list.push('炎上课');
+    else if (set.has(11) && set.has(3) && set.has(7)) list.push('曲直课');
+    else if (set.has(5) && set.has(9) && set.has(1)) list.push('从革课');
+  }
+  const JIASE = [4,10,1,7];
+  if (JIASE.includes(c1) && JIASE.includes(c2) && JIASE.includes(c3)) list.push('稼穑课');
+
+  if ((c2 === (c1 + 1) % 12 && c3 === (c2 + 1) % 12) || (c2 === (c1 - 1 + 12) % 12 && c3 === (c2 - 1 + 12) % 12)) list.push('连茹课');
+
+  const xunStart = (dZ - dG + 12) % 12;
+  const kong1 = (xunStart + 10) % 12;
+  const kong2 = (xunStart + 11) % 12;
+  if (c1 === kong1 || c1 === kong2) list.push('闭口课');
+
+  const LIUHE = [1,0,11,10,9,8,7,6,5,4,3,2];
+  if (c1 === LIUHE[dZ]) list.push('斩关课');
+  
+  let ma = 0;
+  if ([2,6,10].includes(dZ)) ma = 8;
+  else if ([8,0,4].includes(dZ)) ma = 2;
+  else if ([5,9,1].includes(dZ)) ma = 11;
+  else if ([11,3,7].includes(dZ)) ma = 5;
+  if (c1 === ma) list.push('斩关课');
+
+  const MENG = [2,8,5,11], ZHONG = [0,6,3,9], JI = [4,10,1,7];
+  if ((MENG.includes(c1) && ZHONG.includes(c2) && JI.includes(c3)) ||
+      (ZHONG.includes(c1) && JI.includes(c2) && MENG.includes(c3)) ||
+      (JI.includes(c1) && MENG.includes(c2) && ZHONG.includes(c3))) list.push('三交课');
+  if (MENG.includes(c1) && MENG.includes(c2) && MENG.includes(c3)) list.push('玄胎课');
+
+  const guiPos = tianpan.indexOf(tj.guiZhi);
+  if (guiPos === 3 || guiPos === 9) list.push('励德课');
+
+  if (c1 % 2 === 0 && c2 % 2 === 0 && c3 % 2 === 0) list.push('六纯课（纯阳）');
+  if (c1 % 2 !== 0 && c2 % 2 !== 0 && c3 % 2 !== 0) list.push('六纯课（纯阴）');
+  return list;
+}
+
+/* ============ 基础三传 ============ */
+function sanchuan(kes, dayGan, tianpan, opts) {
+  const zei = [], keA = [];
+  const dayYang = dayGan % 2 === 0;
+
+  kes.forEach(k => {
+    const upWx = ZHI_WX[k.up];
+    const downWx = k.downIsGan ? GAN_WX[k.down] : ZHI_WX[k.down];
+    if (KE_MAP[downWx] === upWx) zei.push(k);
+    else if (KE_MAP[upWx] === downWx) keA.push(k);
+  });
+
+  let cands = null, keti = '';
+  if (zei.length) { cands = zei; keti = zei.length === 1 ? '重审课' : '贼克课'; }
+  else if (keA.length) { cands = keA; keti = keA.length === 1 ? '元首课' : '贼克课'; }
+
+  if (cands) {
+    let finalCands = cands;
+    if (cands.length > 1) {
+      let f = cands.filter(c => (c.up % 2 === 0) === dayYang);
+      if (f.length === 0) f = cands;
+      if (f.length === 1) { finalCands = f; keti = '比用课（知一）'; }
+      else {
+        const MENG = [2,8,5,11], ZHONG = [0,6,3,9];
+        let found = false;
+        for (const grp of [MENG, ZHONG]) {
+          const g = f.filter(c => grp.includes(c.up));
+          if (g.length) { finalCands = g; keti = '涉害课'; found = true; break; }
+        }
+        if (!found) { finalCands = f; keti = '涉害课'; }
+      }
+    }
+    const c1 = finalCands[0].up;
+    return { chuan: [c1, tianpan[c1], tianpan[tianpan[c1]]], keti };
+  }
+
+  const ganWx = GAN_WX[dayGan];
+  const ghost = [], cai = [];
+  kes.forEach(k => {
+    const upWx = ZHI_WX[k.up];
+    if (KE_MAP[upWx] === ganWx) ghost.push({ up: k.up });
+    else if (KE_MAP[ganWx] === upWx) cai.push({ up: k.up });
+  });
+  if (ghost.length) return { chuan: [ghost[0].up, tianpan[ghost[0].up], tianpan[tianpan[ghost[0].up]]], keti: '遥克课（蒿矢）' };
+  if (cai.length) return { chuan: [cai[0].up, tianpan[cai[0].up], tianpan[tianpan[cai[0].up]]], keti: '遥克课（弹射）' };
+
+  if (dayYang) {
+    const c1 = tianpan[9];
+    const c2 = opts.isMing ? tianpan[opts.dayZhi] : tianpan[opts.xiangZhi];
+    const c3 = opts.isMing ? tianpan[opts.ji] : tianpan[opts.zuoZhi];
+    return { chuan: [c1, c2, c3], keti: '昴星课（虎视）' };
+  } else {
+    const c1 = tianpan.indexOf(9);
+    const c2 = opts.isMing ? tianpan[opts.ji] : tianpan[opts.zuoZhi];
+    const c3 = opts.isMing ? tianpan[opts.dayZhi] : tianpan[opts.xiangZhi];
+    return { chuan: [c1, c2, c3], keti: '昴星课（冬蛇掩目）' };
+  }
+}
+
+/* ============ 绘盘 ============ */
+function renderPan(tianpan, jiang, hourZhi, tj, isShun, zuoZhi, xiangZhi, zuoDegOff, xiangDegOff, shuiKouZhi) {
+  const g = document.getElementById('panContent');
+  const cx = 450, cy = 450;
+  let h = '';
+
+  const r_out = 445; 
+  const r_xiu_in = 380; 
+  const r_shan_in = 320; 
+  const r_gan_in = 260; 
+  const r_di_in = 200; 
+  const r_bagua_in = 140; 
+  const r_in = 60; 
+
+  // 画同心圆
+  [r_out, r_xiu_in, r_shan_in, r_gan_in, r_di_in, r_bagua_in, r_in].forEach(r => {
+    h += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#4a4a4a" stroke-width="1.5"/>`;
+  });
+
+  // 1. 360度刻度
+  for (let i = 0; i < 360; i += 5) {
+    const deg = i;
+    const isMajor = i % 30 === 0;
+    const len = isMajor ? 15 : 6;
+    const [x1, y1] = pt(cx, cy, r_out, deg);
+    const [x2, y2] = pt(cx, cy, r_out - len, deg);
+    h += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#555" stroke-width="${isMajor ? 1.5 : 0.5}"/>`;
+    if (isMajor) {
+      const [tx, ty] = pt(cx, cy, r_out - 28, deg);
+      h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#888" font-size="14" font-family="sans-serif">${i}</text>`;
+    }
+  }
+
+  // 2. 二十八星宿圈
+  for (let i = 0; i < 28; i++) {
+    const startDeg = xiuStartAngles[i];
+    const duRatio = XIU_DATA[i].du / totalDu;
+    const arcDeg = duRatio * 360;
+    const midDeg = startDeg + arcDeg / 2;
+
+    const [lx1, ly1] = pt(cx, cy, r_xiu_in, startDeg);
+    const [lx2, ly2] = pt(cx, cy, r_shan_in, startDeg);
+    h += `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}" stroke="#333" stroke-width="1"/>`;
+
+    const [tx, ty] = pt(cx, cy, (r_xiu_in + r_shan_in) / 2, midDeg);
+    h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#b89f80" font-size="16" font-family="KaiTi,STKaiti,serif">${XIU_DATA[i].name}</text>`;
+    
+    const [tx2, ty2] = pt(cx, cy, (r_xiu_in + r_shan_in) / 2 + 16, midDeg);
+    h += `<text x="${tx2}" y="${ty2}" text-anchor="middle" dy="0.35em" fill="#806b55" font-size="11" font-family="sans-serif">${XIU_DATA[i].du}°</text>`;
+  }
+
+  // 3. 二十四山圈（划分：每 30 度一组，由于是双山，所以每组2个山占据30度）
+  for (let i = 0; i < 12; i++) {
+    const startDeg = i * 30;
+    const pairs = isShun ? SHUN_PAIRS : NI_PAIRS;
+    
+    // 分隔线
+    const [lx1, ly1] = pt(cx, cy, r_shan_in, startDeg);
+    const [lx2, ly2] = pt(cx, cy, r_gan_in, startDeg);
+    h += `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}" stroke="#333" stroke-width="1"/>`;
+
+    // 写双山文字
+    const [tx, ty] = pt(cx, cy, (r_shan_in + r_gan_in) / 2, startDeg + 15);
+    h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#ddd" font-size="20" font-family="KaiTi,STKaiti,serif">${pairs[i]}</text>`;
+  }
+
+  // 4. 天将圈
+  for (let i = 0; i < 12; i++) {
+    const startDeg = i * 30;
+    const [lx1, ly1] = pt(cx, cy, r_gan_in, startDeg);
+    const [lx2, ly2] = pt(cx, cy, r_di_in, startDeg);
+    h += `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}" stroke="#333" stroke-width="1"/>`;
+
+    const tz = tianpan[i];
+    const j = tj.map[tz];
+    const [tx, ty] = pt(cx, cy, (r_gan_in + r_di_in) / 2, startDeg + 15);
+    h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#7fb3d5" font-size="18" font-family="KaiTi,STKaiti,serif">${j.short}</text>`;
+  }
+
+  // 5. 地盘地支圈
+  for (let i = 0; i < 12; i++) {
+    const startDeg = i * 30;
+    const [lx1, ly1] = pt(cx, cy, r_di_in, startDeg);
+    const [lx2, ly2] = pt(cx, cy, r_bagua_in, startDeg);
+    h += `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}" stroke="#333" stroke-width="1"/>`;
+
+    const [tx, ty] = pt(cx, cy, (r_di_in + r_bagua_in) / 2, startDeg + 15);
+    h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#c9c9c9" font-size="20" font-family="KaiTi,STKaiti,serif">${ZHI[i]}</text>`;
+  }
+
+  // 6. 后天八卦圈（修正：每卦45度，起点对准地支的起点0度）
+  for (let i = 0; i < 8; i++) {
+    const startDeg = BAGUA_START_DEG[i]; // 0, 45, 90...
+    
+    // 划分隔线
+    const [lx1, ly1] = pt(cx, cy, r_bagua_in, startDeg);
+    const [lx2, ly2] = pt(cx, cy, r_in, startDeg);
+    h += `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}" stroke="#333" stroke-width="1"/>`;
+
+    // 写八卦字（放在扇区中心）
+    const midDeg = startDeg + 22.5;
+    const [tx, ty] = pt(cx, cy, (r_bagua_in + r_in) / 2, midDeg);
+    h += `<text x="${tx}" y="${ty}" text-anchor="middle" dy="0.35em" fill="#d4af37" font-size="26" font-family="KaiTi,STKaiti,serif">${BAGUA[i]}</text>`;
+  }
+  // 封口线 (0度的边已经画了，不需要再画，注意上一次其实画了) 
+  
+  // 中心文字
+  h += `<text x="${cx}" y="${cy - 20}" text-anchor="middle" dy="0.35em" fill="#cfcfcf" font-size="18" font-family="KaiTi,STKaiti,serif">月将 ${ZHI[jiang]}</text>`;
+  h += `<text x="${cx}" y="${cy + 10}" text-anchor="middle" dy="0.35em" fill="#cfcfcf" font-size="18" font-family="KaiTi,STKaiti,serif">${ZHI[jiang]}加${ZHI[hourZhi]}</text>`;
+  h += `<text x="${cx}" y="${cy + 40}" text-anchor="middle" dy="0.35em" fill="#7fb3d5" font-size="15" font-family="KaiTi,STKaiti,serif">${isShun ? '顺旋' : '逆旋'}双山</text>`;
+
+  // 7. 坐向线（根据度数偏转）
+  const baseZuoDeg = zuoZhi * 30 + 15;
+  const actualZuoDeg = baseZuoDeg + zuoDegOff;
+  const baseXiangDeg = xiangZhi * 30 + 15;
+  const actualXiangDeg = baseXiangDeg + xiangDegOff;
+
+  const [zx1, zy1] = pt(cx, cy, r_in, actualZuoDeg);
+  const [zx2, zy2] = pt(cx, cy, r_out, actualZuoDeg);
+  h += `<line x1="${zx1}" y1="${zy1}" x2="${zx2}" y2="${zy2}" stroke="#e74c3c" stroke-width="2.5"/>`;
+
+  const [xx1, xy1] = pt(cx, cy, r_in, actualXiangDeg);
+  const [xx2, xy2] = pt(cx, cy, r_out, actualXiangDeg);
+  h += `<line x1="${xx1}" y1="${xy1}" x2="${xx2}" y2="${xy2}" stroke="#3498db" stroke-width="2.5"/>`;
+
+  // 8. 水口线（绿色虚线）
+  if (shuiKouZhi !== null && shuiKouZhi >= 0) {
+    const shuiDeg = shuiKouZhi * 30 + 15;
+    const [sx1, sy1] = pt(cx, cy, r_in, shuiDeg);
+    const [sx2, sy2] = pt(cx, cy, r_out, shuiDeg);
+    h += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="#2ecc71" stroke-width="2" stroke-dasharray="8,5"/>`;
+  }
+
+  g.innerHTML = h;
+}
+
+/* ============ 主排盘 ============ */
+function buildPan() {
+  const gender = document.getElementById('gender').value;
+  const zuoShan = +document.getElementById('zuoShan').value;
+  const xiangShan = +document.getElementById('xiangShan').value;
+  const zuoDegOff = +document.getElementById('zuoDeg').value || 0;
+  const xiangDegOff = +document.getElementById('xiangDeg').value || 0;
+  const shuiKouZhi = +document.getElementById('shuiKou').value;
+
+  const yG = +document.getElementById('yGan').value;
+  const yZ = +document.getElementById('yZhi').value;
+  const mG = +document.getElementById('mGan').value;
+  const mZ = +document.getElementById('mZhi').value;
+  const dG = +document.getElementById('dGan').value;
+  const dZ = +document.getElementById('dZhi').value;
+  const hG = +document.getElementById('hGan').value;
+  const hZ = +document.getElementById('hZhi').value;
+
+  const szHTML = `
+    <div class="zhu"><div class="zhu-gz">${GAN[yG]}<br>${ZHI[yZ]}</div><div class="zhu-label">年</div></div>
+    <div class="zhu"><div class="zhu-gz">${GAN[mG]}<br>${ZHI[mZ]}</div><div class="zhu-label">月</div></div>
+    <div class="zhu"><div class="zhu-gz">${GAN[dG]}<br>${ZHI[dZ]}</div><div class="zhu-label">日</div></div>
+    <div class="zhu"><div class="zhu-gz">${GAN[hG]}<br>${ZHI[hZ]}</div><div class="zhu-label">时</div></div>
+  `;
+  document.getElementById('sizhuDisplay').innerHTML = szHTML;
+
+  const isYangYear = (yG % 2 === 0);
+  const isShun = (isYangYear && gender === 'male') || (!isYangYear && gender === 'female');
+
+  const jiang = YUEJIANG[mZ];
+  const tianpan = [];
+  for (let p = 0; p < 12; p++) {
+    tianpan[p] = (jiang + p - hZ + 24) % 12;
+  }
+
+  const zuoZhi = Math.floor(zuoShan / 2);
+  const xiangZhi = Math.floor(xiangShan / 2);
+  const ji = JIGONG[dG];
+
+  const mingKe = [
+    { up: tianpan[ji],              down: dG,              downIsGan: true  },
+    { up: tianpan[tianpan[ji]],     down: tianpan[ji],     downIsGan: false },
+    { up: tianpan[dZ],              down: dZ,              downIsGan: false },
+    { up: tianpan[tianpan[dZ]],     down: tianpan[dZ],     downIsGan: false }
+  ];
+
+  const shanKe = [
+    { up: tianpan[zuoZhi],             down: zuoZhi,             downIsGan: false },
+    { up: tianpan[tianpan[zuoZhi]],    down: tianpan[zuoZhi],    downIsGan: false },
+    { up: tianpan[xiangZhi],           down: xiangZhi,           downIsGan: false },
+    { up: tianpan[tianpan[xiangZhi]],  down: tianpan[xiangZhi],  downIsGan: false }
+  ];
+
+  const mingRes = sanchuan(mingKe, dG, tianpan, { isMing: true,  ji, dayZhi: dZ, zuoZhi, xiangZhi });
+  const shanRes = sanchuan(shanKe, dG, tianpan, { isMing: false, ji, dayZhi: dZ, zuoZhi, xiangZhi });
+
+  const tj = getTianjiang(dG, hZ, tianpan);
+
+  const extraKeti = getExtraKeti(mingRes.chuan, dG, dZ, tianpan, tj);
+  let allKeti = [mingRes.keti, ...extraKeti];
+  allKeti = [...new Set(allKeti)];
+
+  let shuiKouStr = '未选';
+  if (shuiKouZhi >= 0) {
+    const shuiDZ = ZHI[shuiKouZhi];
+    const shuiTP = ZHI[tianpan[shuiKouZhi]];
+    const tjShui = tj.map[shuiKouZhi].short;
+    shuiKouStr = `地盘${shuiDZ} (天盘${shuiTP}·${tjShui})`;
+  }
+
+  const info1 =
+    `${GAN[yG]}${ZHI[yZ]}年 ${GAN[mG]}${ZHI[mZ]}月 ${GAN[dG]}${ZHI[dZ]}日 ${GAN[hG]}${ZHI[hZ]}时 · ${isYangYear ? '阳年' : '阴年'}${gender === 'male' ? '男' : '女'} · ${isShun ? '顺' : '逆'}排` +
+    ` ｜ 月将${ZHI[jiang]} · ${ZHI[jiang]}加${ZHI[hZ]}`;
+  const info2 =
+    `<span class="hl">坐${SHAN24[zuoShan]}(${zuoDegOff}°)向${SHAN24[xiangShan]}(${xiangDegOff}°) · 水口：${shuiKouStr}</span><br>` +
+    `<span class="hl">${tj.isDay ? '昼' : '夜'}贵${ZHI[tj.guiZhi]}临地盘${ZHI[tj.diPos]} · ${tj.shun ? '顺' : '逆'}排天将 · ${isShun ? '顺' : '逆'}旋双山</span>`;
+  document.getElementById('info').innerHTML = info1 + '<br>' + info2;
+
+  renderPan(tianpan, jiang, hZ, tj, isShun, zuoZhi, xiangZhi, zuoDegOff, xiangDegOff, shuiKouZhi);
+
+  const mingSCStr = mingRes.chuan.map(z => ZHI[z]).join('');
+  const shanSCStr = shanRes.chuan.map(z => ZHI[z]).join('');
+  
+  const mingUpStr = mingKe.map(k => ZHI[k.up]).join('');
+  const mingDownStr = mingKe.map(k => k.downIsGan ? GAN[k.down] : ZHI[k.down]).join('');
+  
+  const shanUpStr = shanKe.map(k => ZHI[k.up]).join('');
+  const shanDownStr = shanKe.map(k => ZHI[k.down]).join('');
+
+  const textPanHTML = `
+    <div class="text-line"><span class="big-text">${mingSCStr}</span><span class="small-text">命盘三传</span></div>
+    <div class="text-line"><span class="big-text">${shanSCStr}</span><span class="small-text">山盘三传</span></div>
+    <br>
+    <div class="text-line"><span class="big-text">${mingUpStr}</span></div>
+    <div class="text-line"><span class="big-text">${mingDownStr}</span><span class="small-text">命盘四课</span></div>
+    <br>
+    <div class="text-line"><span class="big-text">${shanUpStr}</span></div>
+    <div class="text-line"><span class="big-text">${shanDownStr}</span><span class="small-text">山盘四课</span></div>
+    <div class="keti-box"><span class="label">课体（命盘）：</span><span class="val">${allKeti.join('、')}</span></div>
+  `;
+  document.getElementById('textPan').innerHTML = textPanHTML;
+}
+
+/* ============ 初始化 ============ */
+function initUI() {
+  document.querySelectorAll('select.gan').forEach(el => fillSelect(el, GAN));
+  document.querySelectorAll('select.zhi').forEach(el => fillSelect(el, ZHI));
+  document.querySelectorAll('select.shan').forEach(el => fillSelect(el, SHAN24));
+
+  document.getElementById('yGan').value = 2;
+  document.getElementById('yZhi').value = 6;
+  document.getElementById('mGan').value = 6;
+  document.getElementById('mZhi').value = 2;
+  document.getElementById('dGan').value = 1;
+  document.getElementById('dZhi').value = 11;
+  document.getElementById('hGan').value = 2;
+  document.getElementById('hZhi').value = 0;
+  
+  document.getElementById('gender').value = 'male';
+  document.getElementById('zuoShan').value = 19; // 辛
+  document.getElementById('xiangShan').value = 7; // 乙
+  document.getElementById('shuiKou').value = 4; // 辰
+
+  document.getElementById('quickHour').addEventListener('change', (e) => {
+    if (e.target.value !== '') {
+      const hZ = parseInt(e.target.value);
+      document.getElementById('hZhi').value = hZ;
+      const dG = +document.getElementById('dGan').value;
+      const startGan = (dG % 5) * 2;
+      document.getElementById('hGan').value = (startGan + hZ) % 10;
+    }
+  });
+}
+
+initUI();
+document.getElementById('btnPan').addEventListener('click', buildPan);
+buildPan();
+</script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
